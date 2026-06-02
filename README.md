@@ -69,8 +69,8 @@ SETTLEMENTDATE,TOTALDEMAND
 |-----------------------|----------------------------------------------------------------|
 | 📊 Data Historis      | Time series, rata-rata per bulan, distribusi, preview tabel    |
 | 🔧 Pelatihan Model    | Kurva loss training & validation, ringkasan arsitektur         |
-| 📈 Evaluasi           | MAE, RMSE, MAPE, scatter aktual vs prediksi, distribusi error  |
-| 🔮 Prediksi Masa Depan| Master chart, zoom prediksi, tabel harian                     |
+| 📈 Evaluasi           | MAE, RMSE, MAPE,                                               |
+| 🔮 Prediksi Masa Depan| Master chart, zoom prediksi, tabel harian                      |
 | 💾 Ekspor             | Unduh CSV evaluasi, prediksi, dan ringkasan metrik             |
 
 ---
