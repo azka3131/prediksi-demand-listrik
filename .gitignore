@@ -3,4 +3,4 @@ __pycache__/
 *.pyc
 saved_models/
 .env
-.streamlit/
+.streamlit/ 
