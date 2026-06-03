@@ -1,7 +1,7 @@
-streamlit
-tensorflow
-scikit-learn
-pandas
-numpy
-matplotlib
-openpyxl
+streamlit==1.45.1
+tensorflow==2.16.1
+scikit-learn==1.6.1
+pandas==2.2.3
+numpy==1.26.4
+matplotlib==3.10.0
+openpyxl==3.1.5

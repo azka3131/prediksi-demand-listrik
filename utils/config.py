@@ -30,15 +30,15 @@ def setup_page_and_styling():
     """, unsafe_allow_html=True)
 
     plt.rcParams.update({
-        "figure.facecolor":  "#161b27",
-        "axes.facecolor":    "#1a2035",
+        "figure.facecolor":  "#ffffff",
+        "axes.facecolor":    "#ffffff",
         "axes.edgecolor":    "#2e3650",
         "axes.labelcolor":   "#94a3b8",
         "xtick.color":       "#64748b",
         "ytick.color":       "#64748b",
-        "text.color":        "#e2e8f0",
-        "grid.color":        "#1e2a40",
-        "grid.linewidth":    0.7,
+        "text.color":        "#000000",
+        "grid.color":        "#cbd5e1",
+        "grid.linewidth":    0.9,
         "legend.facecolor":  "#1e2535",
         "legend.edgecolor":  "#2e3650",
         "legend.labelcolor": "#e2e8f0",

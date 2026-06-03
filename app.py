@@ -21,7 +21,7 @@ with st.sidebar:
     st.markdown("## ⚡ LSTM Energi Listrik")
     st.markdown("---")
 
-    st.markdown('<div class="section-header">📂 Dataset</div>', unsafe_allow_html=True)
+    st.markdown('<div class="section-header"> Dataset</div>', unsafe_allow_html=True)
     uploaded = st.file_uploader(
         "Upload CSV (kolom: tanggal, demand)",
         type=["csv"],
@@ -30,8 +30,8 @@ with st.sidebar:
 
     st.markdown('<div class="section-header">⚙️ Konfigurasi Model</div>', unsafe_allow_html=True)
     lookback = st.selectbox("Lookback Window (hari)", [30, 60, 90], index=1)
-    horizon  = st.slider("Horizon Prediksi (hari)", 7, 90, 30, 7)
-    rasio_test = st.slider("Rasio Data Uji (%)", 10, 40, 30, 5)
+    horizon  = st.slider("Horizon Prediksi (hari)", 7, 90, 30, 1)
+    rasio_test = st.slider("Rasio Data Uji (%)", 10, 50, 30, 5)
 
     st.markdown("**Arsitektur LSTM**")
     unit1   = st.selectbox("LSTM Layer 1 (unit)", [64, 128, 256], index=1)

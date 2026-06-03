@@ -30,20 +30,22 @@ def render_tab_data(uploaded):
         col.markdown(f'<div class="metric-card"><div class="metric-label">{lbl}</div><div class="metric-value">{val}</div><div class="metric-sub">{sub}</div></div>', unsafe_allow_html=True)
 
     st.markdown("---")
-    fig, ax = plt.subplots(figsize=(14, 4))
-    ax.plot(df["tanggal"], df["demand"]/1e6, color="#60a5fa", linewidth=0.9, label="Demand Harian")
+    
+    # CHART 1: DEMAND HARIAN
+    fig, ax = plt.subplots(figsize=(12, 5.5))
+    ax.plot(df["tanggal"], df["demand"]/1e6, color="#000000", linewidth=1, label="Demand Harian")
     ax.fill_between(df["tanggal"], df["demand"]/1e6, alpha=0.12, color="#60a5fa")
     rata = df["demand"].mean()/1e6
-    ax.axhline(rata, color="#f87171", linestyle="--", linewidth=1.2, label=f"Rata-rata: {rata:.2f}M MW")
-    ax.set_title("Data Historis Kebutuhan Energi Listrik Harian", fontsize=13, pad=12)
-    ax.set_ylabel("Demand (juta MW)")
+    ax.axhline(rata, color="#f87171", linestyle="--", linewidth=1.5, label=f"Rata-rata: {rata:.2f}M MW")
+    
+    ax.set_title("Data Historis Kebutuhan Energi Listrik Harian", fontsize=16, fontweight="bold", pad=15)
+    ax.set_ylabel("Demand (juta MW)", fontsize=13)
     ax.xaxis.set_major_formatter(mdates.DateFormatter("%b %Y"))
     ax.xaxis.set_major_locator(mdates.MonthLocator(interval=3))
-    ax.tick_params(axis="x", rotation=30)
-    ax.legend()
-    ax.grid(True, alpha=0.3)
+    ax.tick_params(axis="both", labelsize=12)
+    plt.xticks(rotation=30)
     plt.tight_layout()
-    st.pyplot(fig)
+    st.pyplot(fig, use_container_width=True)
     plt.close()
 
     st.markdown("---")
@@ -54,23 +56,18 @@ def render_tab_data(uploaded):
     nama = ["Jan","Feb","Mar","Apr","Mei","Jun","Jul","Agu","Sep","Okt","Nov","Des"]
     warna = ["#ef4444" if b in [6,7,8] else "#3b82f6" for b in range(1,13)]
     
-    # Ukuran figure disamakan dengan chart utama (14, 4) agar full width
-    fig2, ax2 = plt.subplots(figsize=(14, 4))
+    # CHART 2: RATA-RATA BULANAN BAR CHART
+    fig2, ax2 = plt.subplots(figsize=(12, 5))
     bars = ax2.bar(nama, rb.values, color=warna, alpha=0.85, edgecolor="#0f1117", linewidth=0.5)
     for b, v in zip(bars, rb.values):
-        ax2.text(b.get_x()+b.get_width()/2, b.get_height()+0.003, f"{v:.2f}", ha="center", va="bottom", fontsize=8, color="#94a3b8")
-    ax2.set_ylabel("Demand (juta MW)")
-    ax2.grid(True, axis="y", alpha=0.3)
+        ax2.text(b.get_x()+b.get_width()/2, b.get_height()+0.02, f"{v:.2f}", ha="center", va="bottom", fontsize=11, fontweight="bold", color="#64748b")
+    ax2.set_ylabel("Demand (juta MW)", fontsize=13)
+    ax2.tick_params(axis="both", labelsize=12)
+    ax2.grid(True, axis="y", alpha=0.4)
     plt.tight_layout()
-    st.pyplot(fig2)
+    st.pyplot(fig2, use_container_width=True)
     plt.close()
 
-    st.markdown("---")
-    st.markdown("#### Preview Data (10 Terakhir)")
-    st.dataframe(
-        df.tail(10).assign(demand_MW=df["demand"].tail(10).map("{:,.0f}".format))[["tanggal","demand_MW"]].rename(columns={"tanggal":"Tanggal","demand_MW":"Demand (MW)"}),
-        use_container_width=True, hide_index=True
-    )
 
 
 def render_tab_train():
@@ -93,17 +90,26 @@ def render_tab_train():
         col.markdown(f'<div class="metric-card"><div class="metric-label">{lbl}</div><div class="metric-value">{val}</div></div>', unsafe_allow_html=True)
 
     st.markdown("---")
-    fig, ax = plt.subplots(figsize=(13, 4.5))
+    
+    # CHART 3: KURVA LOSS PELATIHAN
+    fig, ax = plt.subplots(figsize=(12, 5))
     ep = range(1, ep_stop+1)
-    ax.plot(ep, h.history["loss"],     color="#60a5fa", linewidth=2, label="Training Loss")
-    ax.plot(ep, h.history["val_loss"], color="#f87171", linewidth=2, linestyle="--", label="Validation Loss")
+    ax.plot(ep, h.history["loss"],     color="#60a5fa", linewidth=2.5, label="Training Loss")
+    ax.plot(ep, h.history["val_loss"], color="#f87171", linewidth=2.5, linestyle="--", label="Validation Loss")
     best = np.argmin(h.history["val_loss"])
-    ax.axvline(best+1, color="#fbbf24", linestyle=":", linewidth=1.5, label=f"Best Epoch: {best+1}")
-    ax.set_title("Kurva Loss Pelatihan Model LSTM", fontsize=12, pad=10)
-    ax.set_xlabel("Epoch"); ax.set_ylabel("MSE Loss")
-    ax.legend(); ax.grid(True, alpha=0.3)
+    ax.axvline(best+1, color="#fbbf24", linestyle=":", linewidth=2, label=f"Best Epoch: {best+1}")
+    
+    ax.set_title("Kurva Loss Pelatihan Model LSTM", fontsize=16, fontweight="bold", pad=15)
+    ax.set_xlabel("Epoch", fontsize=13)
+    ax.set_ylabel("MSE Loss", fontsize=13)
+    ax.tick_params(axis="both", labelsize=12)
+    
+    # Menambahkan labelcolor gelap agar terlihat di background transparan/putih
+    ax.legend(fontsize=8, frameon=False, labelcolor="#334155") 
+    
+    ax.grid(True, alpha=0.4)
     plt.tight_layout()
-    st.pyplot(fig)
+    st.pyplot(fig, use_container_width=True)
     plt.close()
 
 
@@ -131,19 +137,26 @@ def render_tab_eval():
     c4.markdown(f'<div class="metric-card"><div class="metric-label">Kategori</div><div class="metric-value"><span class="{badge_cls}">{kategori}</span></div><div class="metric-sub">MAPE < 10% = Baik</div></div>', unsafe_allow_html=True)
 
     st.markdown("---")
+    
+    # CHART 4: AKTUAL VS PREDIKSI EVALUASI
     tanggal_valid = pd.to_datetime(tanggal_test)[valid]
-    fig, ax = plt.subplots(figsize=(14, 5))
-    ax.plot(tanggal_valid, y_v/1e6,   color="#60a5fa", linewidth=2, marker="o", markersize=3, label="Aktual")
-    ax.plot(tanggal_valid, p_v/1e6,   color="#f87171", linewidth=2, marker="s", markersize=3, linestyle="--", label="Prediksi")
-    ax.fill_between(tanggal_valid, y_v/1e6, p_v/1e6, alpha=0.18, color="#fbbf24", label="Selisih")
-    ax.set_title(f"Aktual vs Prediksi  |  MAE={mae:,.0f} MW  |  RMSE={rmse:,.0f} MW  |  MAPE={mape:.2f}%", fontsize=11, pad=10)
-    ax.set_ylabel("Demand (juta MW)")
+    fig, ax = plt.subplots(figsize=(12, 5.5))
+    ax.plot(tanggal_valid, y_v/1e6,   color="#60a5fa", linewidth=2, marker="o", markersize=4, label="Aktual")
+    ax.plot(tanggal_valid, p_v/1e6,   color="#f87171", linewidth=2, marker="s", markersize=4, linestyle="--", label="Prediksi")
+    ax.fill_between(tanggal_valid, y_v/1e6, p_v/1e6, alpha=0.18, color="#fbbf24")
+    
+    ax.set_title(f"Aktual vs Prediksi  |  MAE={mae:,.0f} MW  |  RMSE={rmse:,.0f} MW  |  MAPE={mape:.2f}%", fontsize=15, fontweight="bold", pad=15)
+    ax.set_ylabel("Demand (juta MW)", fontsize=13)
     ax.xaxis.set_major_formatter(mdates.DateFormatter("%b %Y"))
-    ax.xaxis.set_major_locator(mdates.MonthLocator(interval=2))
-    ax.tick_params(axis="x", rotation=30)
-    ax.legend(); ax.grid(True, alpha=0.3)
+    ax.tick_params(axis="both", labelsize=9)
+    plt.xticks(rotation=30)
+    
+    # Menambahkan labelcolor gelap agar terlihat di background transparan/putih
+    ax.legend(fontsize=8, frameon=False, labelcolor="#334155") 
+    
+    ax.grid(True, alpha=0.4)
     plt.tight_layout()
-    st.pyplot(fig)
+    st.pyplot(fig, use_container_width=True)
     plt.close()
 
 
@@ -169,35 +182,49 @@ def render_tab_pred(horizon):
         col.markdown(f'<div class="metric-card"><div class="metric-label">{lbl}</div><div class="metric-value">{val}</div></div>', unsafe_allow_html=True)
 
     st.markdown("---")
-    fig, ax = plt.subplots(figsize=(15, 6))
-    ax.plot(df["tanggal"], df["demand"]/1e6, color="#60a5fa", linewidth=0.7, alpha=0.6, label="Data Historis")
-    ax.plot(pd.to_datetime(tanggal_test), y_test_aktual/1e6, color="#34d399", linewidth=1.5, marker="o", markersize=2, label="Aktual (data uji)")
-    ax.plot(pd.to_datetime(tanggal_test), pred_aktual/1e6,   color="#f87171", linewidth=1.5, marker="s", markersize=2, linestyle="--", label="Prediksi (data uji)")
-    ax.plot(tanggal_depan, prediksi_depan/1e6, color="#fbbf24", linewidth=2.5, marker="^", markersize=5, label=f"Prediksi {horizon} Hari ke Depan")
-    ax.fill_between(tanggal_depan, prediksi_depan/1e6*0.92, prediksi_depan/1e6*1.08, alpha=0.18, color="#fbbf24", label="Interval ±8%")
-    ax.axvline(df["tanggal"].max(), color="#6b7280", linestyle=":", linewidth=1.5)
-    ax.set_title("Historis, Evaluasi, dan Prediksi Masa Depan", fontsize=13, pad=12)
-    ax.set_ylabel("Demand (juta MW)")
+    
+    # CHART 5: HISTORIS & PREDIKSI MASA DEPAN (LENGKAP)
+    fig, ax = plt.subplots(figsize=(12, 6))
+    ax.plot(df["tanggal"], df["demand"]/1e6, color="#60a5fa", linewidth=1, alpha=0.6, label="Data Historis")
+    ax.plot(pd.to_datetime(tanggal_test), y_test_aktual/1e6, color="#34d399", linewidth=2, marker="o", markersize=3, label="Aktual (data uji)")
+    ax.plot(pd.to_datetime(tanggal_test), pred_aktual/1e6,   color="#f87171", linewidth=2, marker="s", markersize=3, linestyle="--", label="Prediksi (data uji)")
+    ax.plot(tanggal_depan, prediksi_depan/1e6, color="#fbbf24", linewidth=2.5, marker="^", markersize=6, label=f"Prediksi {horizon} Hari ke Depan")
+    ax.fill_between(tanggal_depan, prediksi_depan/1e6*0.92, prediksi_depan/1e6*1.08, alpha=0.18, color="#fbbf24") 
+    ax.axvline(df["tanggal"].max(), color="#6b7280", linestyle=":", linewidth=2)
+    
+    ax.set_title("Historis, Evaluasi, dan Prediksi Masa Depan", fontsize=16, fontweight="bold", pad=15)
+    ax.set_ylabel("Demand (juta MW)", fontsize=13)
     ax.xaxis.set_major_formatter(mdates.DateFormatter("%b %Y"))
-    ax.xaxis.set_major_locator(mdates.MonthLocator(interval=3))
-    ax.tick_params(axis="x", rotation=30)
-    ax.legend(fontsize=9, loc="lower left"); ax.grid(True, alpha=0.25)
+    ax.tick_params(axis="both", labelsize=9)
+    plt.xticks(rotation=30)
+    
+    # Menambahkan labelcolor gelap agar terlihat di background transparan/putih
+    ax.legend(fontsize=8, loc="lower left", frameon=False, labelcolor="#334155") 
+    
+    ax.grid(True, alpha=0.4)
     plt.tight_layout()
-    st.pyplot(fig)
+    st.pyplot(fig, use_container_width=True)
     plt.close()
 
     st.markdown("---")
-    st.markdown("####  Prediksi Masa Depan")
+    st.markdown("####  Prediksi Masa Depan (Zoomed)")
     
-    # Lebar disesuaikan agar membentang secara penuh seperti grafik utama
-    fig2, ax2 = plt.subplots(figsize=(15, 4))
-    ax2.plot(tanggal_depan, prediksi_depan/1e6, color="#fbbf24", linewidth=2.5, marker="o", markersize=5)
-    ax2.fill_between(tanggal_depan, prediksi_depan/1e6*0.92, prediksi_depan/1e6*1.08, alpha=0.18, color="#fbbf24", label="Interval ±8%")
-    ax2.set_ylabel("Demand (juta MW)")
+    # CHART 6: PREDIKSI MASA DEPAN ZOOM
+    fig2, ax2 = plt.subplots(figsize=(12, 5))
+    ax2.plot(tanggal_depan, prediksi_depan/1e6, color="#fbbf24", linewidth=2.5, marker="o", markersize=6, label=f"Prediksi {horizon} Hari") 
+    ax2.fill_between(tanggal_depan, prediksi_depan/1e6*0.92, prediksi_depan/1e6*1.08, alpha=0.18, color="#fbbf24") 
+    
+    ax2.set_ylabel("Demand (juta MW)", fontsize=13)
     ax2.xaxis.set_major_formatter(mdates.DateFormatter("%d %b"))
-    ax2.tick_params(axis="x", rotation=30); ax2.legend(); ax2.grid(True, alpha=0.3)
+    ax2.tick_params(axis="both", labelsize=9)
+    plt.xticks(rotation=30)
+    
+    # Menambahkan labelcolor gelap agar terlihat di background transparan/putih
+    ax2.legend(fontsize=8, frameon=False, labelcolor="#334155") 
+    
+    ax2.grid(True, alpha=0.4)
     plt.tight_layout()
-    st.pyplot(fig2)
+    st.pyplot(fig2, use_container_width=True)
     plt.close()
 
 
