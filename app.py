@@ -25,13 +25,14 @@ with st.sidebar:
     uploaded = st.file_uploader(
         "Upload CSV (kolom: tanggal, demand)",
         type=["csv"],
-        help="File CSV dengan kolom SETTLEMENTDATE dan TOTALDEMAND (atau tanggal & demand)",
+        # Teks panduan diperbarui untuk mengingatkan pengguna
+        help="Pastikan dataset berinterval HARIAN dan mencakup riwayat minimal 6 BULAN. File CSV harus memiliki kolom SETTLEMENTDATE dan TOTALDEMAND (atau tanggal & demand)",
     )
 
     st.markdown('<div class="section-header">⚙️ Konfigurasi Model</div>', unsafe_allow_html=True)
     lookback = st.selectbox("Lookback Window (hari)", [30, 60, 90], index=1)
     horizon  = st.slider("Horizon Prediksi (hari)", 7, 90, 30, 1)
-    rasio_test = st.slider("Rasio Data Uji (%)", 10, 50, 30, 5)
+    rasio_test = st.slider("Rasio Data Uji (%)", 10, 50, 30, 1)
 
     st.markdown("**Arsitektur LSTM**")
     unit1   = st.selectbox("LSTM Layer 1 (unit)", [64, 128, 256], index=1)
@@ -40,9 +41,9 @@ with st.sidebar:
 
     st.markdown("**Pelatihan**")
     lr          = st.select_slider("Learning Rate", [0.0001, 0.0005, 0.001, 0.005], value=0.001)
-    max_epochs  = st.slider("Max Epochs", 20, 200, 100, 10)
+    max_epochs  = st.slider("Max Epochs", 20, 200, 100, 1)
     batch_size  = st.selectbox("Batch Size", [16, 32, 64], index=1)
-    patience    = st.slider("Early Stop Patience", 5, 30, 15, 5)
+    patience    = st.slider("Early Stop Patience", 5, 30, 15, 1)
 
     st.markdown("---")
     run_btn = st.button("🚀 Latih & Prediksi", type="primary", use_container_width=True)
@@ -70,6 +71,13 @@ if run_btn:
         if "df" not in st.session_state:
             st.session_state["df"] = load_csv(uploaded)
         df = st.session_state["df"]
+        
+        # --- BLOK VALIDASI INPUT PENGGUNA ---
+        # Memastikan dataset memiliki minimal 180 hari (sekitar 6 bulan)
+        if len(df) < 180:
+            st.error("⚠️ **Dataset terlalu kecil!** Harap masukkan data dengan rentang waktu minimal 6 bulan (minimal 180 baris data harian) agar model LSTM dapat membentuk sekuens dan dievaluasi dengan baik.")
+            st.stop() # Menghentikan proses secara elegan tanpa memicu crash TensorFlow
+        # ------------------------------------
         
         import tensorflow as tf
         from tensorflow.keras.callbacks import EarlyStopping

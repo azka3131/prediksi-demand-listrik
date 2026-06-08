@@ -53,8 +53,16 @@ def render_tab_data(uploaded):
     
     df["bulan"] = df["tanggal"].dt.month
     rb = df.groupby("bulan")["demand"].mean()/1e6
-    nama = ["Jan","Feb","Mar","Apr","Mei","Jun","Jul","Agu","Sep","Okt","Nov","Des"]
-    warna = ["#ef4444" if b in [6,7,8] else "#3b82f6" for b in range(1,13)]
+    
+    # -------------------------------------------------------------------
+    # PERBAIKAN: Mapping nama bulan agar tidak terbaca sebagai angka desimal.
+    # Memastikan sumbu X selalu berupa kategori Teks (String).
+    # -------------------------------------------------------------------
+    dict_bulan = {1:"Jan", 2:"Feb", 3:"Mar", 4:"Apr", 5:"Mei", 6:"Jun", 
+                  7:"Jul", 8:"Agu", 9:"Sep", 10:"Okt", 11:"Nov", 12:"Des"}
+    
+    nama = [dict_bulan[b] for b in rb.index]
+    warna = ["#ef4444" if b in [6,7,8] else "#3b82f6" for b in rb.index]
     
     # CHART 2: RATA-RATA BULANAN BAR CHART
     fig2, ax2 = plt.subplots(figsize=(12, 5))
@@ -67,7 +75,6 @@ def render_tab_data(uploaded):
     plt.tight_layout()
     st.pyplot(fig2, use_container_width=True)
     plt.close()
-
 
 
 def render_tab_train():
@@ -104,7 +111,6 @@ def render_tab_train():
     ax.set_ylabel("MSE Loss", fontsize=13)
     ax.tick_params(axis="both", labelsize=12)
     
-    # Menambahkan labelcolor gelap agar terlihat di background transparan/putih
     ax.legend(fontsize=8, frameon=False, labelcolor="#334155") 
     
     ax.grid(True, alpha=0.4)
@@ -151,7 +157,6 @@ def render_tab_eval():
     ax.tick_params(axis="both", labelsize=9)
     plt.xticks(rotation=30)
     
-    # Menambahkan labelcolor gelap agar terlihat di background transparan/putih
     ax.legend(fontsize=8, frameon=False, labelcolor="#334155") 
     
     ax.grid(True, alpha=0.4)
@@ -198,7 +203,6 @@ def render_tab_pred(horizon):
     ax.tick_params(axis="both", labelsize=9)
     plt.xticks(rotation=30)
     
-    # Menambahkan labelcolor gelap agar terlihat di background transparan/putih
     ax.legend(fontsize=8, loc="lower left", frameon=False, labelcolor="#334155") 
     
     ax.grid(True, alpha=0.4)
@@ -219,7 +223,6 @@ def render_tab_pred(horizon):
     ax2.tick_params(axis="both", labelsize=9)
     plt.xticks(rotation=30)
     
-    # Menambahkan labelcolor gelap agar terlihat di background transparan/putih
     ax2.legend(fontsize=8, frameon=False, labelcolor="#334155") 
     
     ax2.grid(True, alpha=0.4)
